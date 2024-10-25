@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "778987718007",
+    "project_id": "cardsapp-688f1",
+    "storage_bucket": "cardsapp-688f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778987718007:android:216ee01ca66df791724d72",
+        "android_client_info": {
+          "package_name": "com.example.cartaspg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2FCzr7jV-l8KBE3zZtaqRGojvBK5m1WU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
