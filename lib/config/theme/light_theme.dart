@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color _turquoiseLight = Color(0xFF425C5A); 
-const Color _orangeLight = Color.fromARGB(255, 141, 236, 90);
+const Color _orangeLight = Color.fromARGB(255, 216, 174, 18);
 const Color _pers = Color(0xFF425C5A);
 const Color _blackColor = Colors.black;
 const Color _bodyTextColor = Colors.black87; // Puedes ajustar la opacidad

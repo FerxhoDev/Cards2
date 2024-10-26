@@ -1,8 +1,10 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:go_router/go_router.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -12,26 +14,59 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
- 
+  String? _selectedRole;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  //Login con Correo y Contraseña
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  Future<void> _handleSignIn(BuildContext context) async {
+    try {
+      // Cerrar sesión previa para permitir seleccionar otra cuenta
+      await _googleSignIn.signOut();
+      
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
 
-  
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
 
+      if (user != null) {
+        // Verificar si el correo está en la colección usersperm
+        final QuerySnapshot result = await FirebaseFirestore.instance
+            .collection('usersperm')
+            .where('email', isEqualTo: user.email)
+            .limit(1)
+            .get();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+        if (result.docs.isNotEmpty) {
+          // El correo está permitido, navegar a la página de inicio
+          context.goNamed('HomePage');
+        } else {
+          // El correo no está permitido
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Este correo no está autorizado para iniciar sesión.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          // Cerrar sesión del usuario no autorizado
+          await _auth.signOut();
+        }
+      }
+    } catch (e) {
+      print('Error durante el inicio de sesión: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ocurrió un error durante el inicio de sesión.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -40,12 +75,10 @@ class _LoginState extends State<Login> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Fondo con el mensaje de bienvenida
           Container(
-            height:
-                MediaQuery.of(context).size.height * 0.4, // 40% de la pantalla
+            height: MediaQuery.of(context).size.height * 0.52,
             decoration: const BoxDecoration(
-                color: Color(0xFF425C5A),
+              color: Color(0xFF425C5A),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(80),
                 bottomRight: Radius.circular(80),
@@ -75,7 +108,6 @@ class _LoginState extends State<Login> {
               ),
             ),
           ),
-          // Espacio para el contenido: campos de texto y botones
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(20.w),
@@ -83,101 +115,41 @@ class _LoginState extends State<Login> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 20.h), // Espacio superior
-                    // Campo de texto para el correo
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h), // Espacio entre campos
-
-                    // Campo de texto para la contraseña
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: true, // Oculta la contraseña
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
                     SizedBox(height: 20.h),
-
-                    // Enlace de "Olvidaste tu contraseña"
-                    GestureDetector(
-                      onTap: () {
-                        context.goNamed('ForgotPassword');
-                      },
-                      child: const Text(
-                        'Olvidaste tu contraseña?',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    SizedBox(height: 30.h),
-
-                    // Botón de Iniciar Sesión
+                    Text('Quien eres?',
+                        style: TextStyle(
+                            fontSize: 35.sp, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 15.h),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 100.w),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Material(
-                          color: const Color(0xFF425C5A),
-                          child: InkWell(
-                            onTap: () {
-                              context.goNamed('HomePage');
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 20.h,
-                                horizontal: 10.w,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Iniciar Sesión',
-                                  style: TextStyle(
-                                    fontSize: 35.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: DropdownButton<String>(
+                        hint: const Text('Selecciona tu rol'),
+                        value: _selectedRole,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        items: <String>[
+                          'Estudiante',
+                          'Profesor',
+                          'Administrador'
+                        ].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedRole = newValue;
+                          });
+                        },
                       ),
                     ),
-                    SizedBox(height: 30.h),
-
-                    // Botón de Google
+                    SizedBox(height: 100.h),
                     SignInButton(
                       Buttons.google,
                       text: 'Iniciar con Google',
-                      onPressed: () {
-                      },
+                      onPressed: () => _handleSignIn(context),
                     ),
-                    SizedBox(height: 30.h), // Espacio inferior
-
-                    // Crear una cuenta
-                    GestureDetector(
-                      onTap: () {
-                        context.goNamed('SignIn');
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Crearme una cuenta',
-                              style: TextStyle(color: Colors.grey)),
-                          Icon(Icons.arrow_forward_ios_rounded,
-                              color: Colors.grey, size: 20),
-                        ],
-                      ),
-                    ),
+                    SizedBox(height: 30.h),
                   ],
                 ),
               ),
