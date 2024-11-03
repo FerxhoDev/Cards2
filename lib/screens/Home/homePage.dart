@@ -1,3 +1,4 @@
+import 'package:cartaspg/screens/curso/addCurso.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,24 +15,39 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   String? userName;
   String? userRole;
 
   Future<void> fetchUserDetails() async {
-    final userDetails = await fetchUserNameAndRole();
-    if (userDetails != null) {
+  final userDetails = await fetchUserNameAndRole();
+    if (userDetails != null && mounted) {
       setState(() {
-        userName = userDetails['name'];
+        String name = userDetails['name']!;
+        // Si el nombre tiene más de 15 caracteres, lo recortamos y añadimos '...'
+        userName = name.length > 15 ? '${name.substring(0, 15)}...' : name;
         userRole = userDetails['role'];
       });
     }
   }
 
+
+  void _checkCurrentUser() async {
+  final User? user = _auth.currentUser;
+  if (user != null) {
+    // Usuario ya está autenticado, navega a HomePage
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.goNamed('HomePage');
+    });
+  }
+}
   @override
   void initState() {
     super.initState();
     fetchUserDetails();
+    _checkCurrentUser();
   }
 
   Future<Map<String, String>?> fetchUserNameAndRole() async {
@@ -162,29 +178,16 @@ class _HomepageState extends State<Homepage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  FutureBuilder<Map<String, String>?>(
-                    future: fetchUserNameAndRole(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Text('Cargando...');
-                      }
-        
-                      String displayName = 'Usuario';
-                      if (snapshot.hasData && snapshot.data != null) {
-                        final name = snapshot.data!['name']!;
-                        // Si el nombre tiene más de 14 caracteres, lo recortamos y añadimos '...'
-                        displayName = name.length > 14 ? '${name.substring(0, 14)}...' : name;
-                      }
-        
-                      return Text(
-                        '$displayName 👋',
-                        style: TextStyle(
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    },
-                  ),
+                  if (userName != null)
+                  Text(
+                    '$userName 👋',
+                    style: TextStyle(
+                      fontSize: 40.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                else
+                  const Text('Cargando...'),
                 ],
               ),
             ),
@@ -258,8 +261,11 @@ class _HomepageState extends State<Homepage> {
           ? FloatingActionButton.extended(
               backgroundColor: const Color.fromARGB(255, 153, 118, 2),
               onPressed: () {
-                // Navegar a la pantalla de creación de cursos
-                context.goNamed('CreateCourse'); // Cambia 'CreateCourse' por el nombre de tu ruta de creación de cursos
+                showModalBottomSheet(
+                          context: context,
+                          builder: (ctx) => const AddCurso(),
+                          isScrollControlled: true,
+                        );
               },
               icon: const Icon(Icons.add, color: Colors.white,),
               label: const Text('Crear Curso', style: TextStyle(color: Colors.white),),

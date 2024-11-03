@@ -1,4 +1,5 @@
 import 'package:cartaspg/screens/Home/homePage.dart';
+import 'package:cartaspg/screens/curso/addCurso.dart';
 import 'package:cartaspg/screens/forgotPassword/forgotPassword.dart';
 import 'package:cartaspg/screens/login/login.dart';
 import 'package:cartaspg/screens/signIn/signIn.dart';
@@ -8,7 +9,7 @@ import 'package:go_router/go_router.dart';
 GoRouter appRouter() {
   return GoRouter(
     initialLocation: '/',
-    routes:[
+    routes: [
       GoRoute(
         path: '/',
         name: 'login',
@@ -28,10 +29,16 @@ GoRouter appRouter() {
             path: 'homePage',
             name: 'HomePage',
             builder: (BuildContext context, GoRouterState state) => const Homepage(),
-          )
-        ]
-      )
-    ] 
+            routes: [
+              GoRoute(
+                path: 'addCurso',
+                name: 'AddCurso',
+                builder: (BuildContext context, GoRouterState state) => const Homepage(), // Asegúrate de definir esta pantalla
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
   );
-
 }
