@@ -26,6 +26,47 @@ class _QuizPageState extends State<QuizPage> {
     fetchQuizzes();
   }
 
+
+  Future<void> editQuiz(Map<String, dynamic> quiz) async {
+    setState(() {
+      isCreatingQuiz = true;
+      _quizTitleController.text = quiz['title'];
+      questionForms = (quiz['questions'] as List).map((q) => QuestionForm.fromMap(q)).toList();
+    });
+  }
+
+  Future<void> deleteQuiz(String quizId) async {
+    await FirebaseFirestore.instance
+        .collection('cursos')
+        .doc(widget.cursoId)
+        .collection('quizzes')
+        .doc(quizId)
+        .delete();
+    fetchQuizzes();
+  }
+
+  
+  Future<void> updateQuiz(String quizId) async {
+    if (_formKey.currentState!.validate()) {
+      final updatedQuiz = {
+        'title': _quizTitleController.text,
+        'questions': questionForms.map((qf) => qf.toMap()).toList(),
+      };
+      await FirebaseFirestore.instance
+          .collection('cursos')
+          .doc(widget.cursoId)
+          .collection('quizzes')
+          .doc(quizId)
+          .update(updatedQuiz);
+      fetchQuizzes();
+      setState(() {
+        isCreatingQuiz = false;
+        questionForms = [QuestionForm()];
+        _quizTitleController.clear();
+      });
+    }
+  }
+
   Future<void> fetchUserRole() async {
     final userEmail = FirebaseAuth.instance.currentUser?.email;
     if (userEmail != null) {
@@ -161,9 +202,23 @@ class _QuizPageState extends State<QuizPage> {
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 153, 118, 2)),
             ),
-            onPressed: createQuiz,
-            label: const Text('Crear Quiz', style: TextStyle(color: Colors.white),),
-            icon: const Icon(Icons.check, color: Colors.white,),
+            onPressed: () {
+              if (_quizTitleController.text.isNotEmpty) {
+                final quizToUpdate = quizzes.firstWhere(
+                  (quiz) => quiz['title'] == _quizTitleController.text,
+                  orElse: () => <String, dynamic>{},
+                );
+                if (quizToUpdate.isNotEmpty) {
+                  updateQuiz(quizToUpdate['id']);
+                } else {
+                  createQuiz();
+                }
+              } else {
+                createQuiz();
+              }
+            },
+            label: Text(_quizTitleController.text.isNotEmpty ? 'Actualizar Quiz' : 'Crear Quiz', style: const TextStyle(color: Colors.white),),
+            icon: Icon(_quizTitleController.text.isNotEmpty ? Icons.update : Icons.check, color: Colors.white,),
           ),
         ],
       ),
@@ -198,6 +253,40 @@ class _QuizPageState extends State<QuizPage> {
                 builder: (context) => QuizTakingPage(quiz: quiz),
               ),
             ),
+            trailing: userRole == 'profesor'
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () => editQuiz(quiz),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Eliminar Quiz'),
+                            content: const Text('¿Estás seguro de que quieres eliminar este quiz?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  deleteQuiz(quiz['id']);
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Eliminar'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : null,
           ),
         );
       },
@@ -222,7 +311,11 @@ class _QuizPageState extends State<QuizPage> {
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 153, 118, 2)),
                 ),
-                onPressed: () => setState(() => isCreatingQuiz = true),
+                onPressed: () => setState(() {
+                  isCreatingQuiz = true;
+                  _quizTitleController.clear();
+                  questionForms = [QuestionForm()];
+                }),
                 label: const Text('Crear Nuevo Quiz', style: TextStyle(color: Colors.white),),
                 icon: const Icon(Icons.add, color: Colors.white,),
               ),
@@ -241,6 +334,16 @@ class QuestionForm {
   final TextEditingController correctAnswerController = TextEditingController();
   final List<TextEditingController> wrongAnswersControllers = 
     List.generate(3, (index) => TextEditingController());
+
+  QuestionForm();
+
+  QuestionForm.fromMap(Map<String, dynamic> map) {
+    questionController.text = map['question'];
+    correctAnswerController.text = map['correctAnswer'];
+    for (int i = 0; i < 3; i++) {
+      wrongAnswersControllers[i].text = map['wrongAnswers'][i];
+    }
+  }
 
   Map<String, dynamic> toMap() {
     return {
