@@ -246,7 +246,7 @@ class _HomepageState extends State<Homepage> {
                         itemCount: courses.length,
                         itemBuilder: (context, index) {
                           final course = courses[index];
-                          return CourseCard(courseName: course['namecurso']);
+                          return CourseCard(courseName: course['namecurso'], idCourse: course['id'],);
                         },
                       );
                     },
@@ -276,30 +276,33 @@ class _HomepageState extends State<Homepage> {
 }
 
 class CourseCard extends StatelessWidget {
-  final String courseName;
-
-  const CourseCard({Key? key, required this.courseName}) : super(key: key);
+    final String courseName;
+    final String idCourse;
+  const CourseCard({Key? key, required this.courseName, required this.idCourse}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              courseName,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () => context.go('/homePage/detalleCurso/$idCourse') ,
+      child: Card(
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                courseName,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            const Icon(Icons.arrow_forward),
-          ],
+              const SizedBox(height: 8),
+              const Icon(Icons.arrow_forward),
+            ],
+          ),
         ),
       ),
     );

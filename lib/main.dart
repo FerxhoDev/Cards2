@@ -1,8 +1,10 @@
 import 'package:cartaspg/config/router/app_router.dart';
 import 'package:cartaspg/config/theme/light_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 
 Future <void> main() async {
@@ -16,16 +18,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(720, 1280),
-      builder: (_, child) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          theme: lightTheme,
-          routerConfig: appRouter(),
-          title: 'App Cartas PG',
-        );
-      },
+    return StreamProvider<User?>.value(
+      value: FirebaseAuth.instance.authStateChanges(),
+      initialData: null,
+      child: ScreenUtilInit(
+        designSize: const Size(720, 1280),
+        builder: (_, child) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: lightTheme,
+            routerConfig: appRouter(),
+            title: 'App Cartas PG',
+          );
+        },
+      ),   
     );
   }
 }
