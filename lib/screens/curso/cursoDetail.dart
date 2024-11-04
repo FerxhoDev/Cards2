@@ -96,8 +96,12 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
         .doc(widget.cursoId);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF425C5A),
       appBar: AppBar(
-        title: Text(cursoNombre.isNotEmpty ? cursoNombre : 'Cargando...'),
+        backgroundColor: const Color(0xFF425C5A),
+        title: Text(cursoNombre.isNotEmpty ? cursoNombre : 'Cargando...', style: const TextStyle(color: Colors.white),),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: cursoRef.collection('cards').snapshots(),
@@ -141,6 +145,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               FloatingActionButton.extended(
+                heroTag: 'crearQuiz',
                 backgroundColor: const Color.fromARGB(255, 153, 118, 2),
                 onPressed: () {
                   null; // Aquí puedes manejar la acción al tocar el botón
@@ -150,6 +155,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
               ),
               SizedBox(height: 8.h),
               FloatingActionButton.extended(
+                heroTag: 'crearTarjeta',
                 backgroundColor: const Color.fromARGB(255, 153, 118, 2),
                 onPressed: () {
                   showModalBottomSheet(

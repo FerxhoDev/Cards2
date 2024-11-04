@@ -212,7 +212,6 @@ class _HomepageState extends State<Homepage> {
               ),
             ),
             const SizedBox(height: 16),
-        
             // Contenedor para las tarjetas
             Expanded(
               child: Container(
