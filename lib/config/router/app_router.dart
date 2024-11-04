@@ -1,5 +1,6 @@
 import 'package:cartaspg/screens/Home/homePage.dart';
 import 'package:cartaspg/screens/Quiz/quizPage.dart';
+import 'package:cartaspg/screens/cards/UpdateCard.dart';
 import 'package:cartaspg/screens/curso/cursoDetail.dart';
 import 'package:cartaspg/screens/forgotPassword/forgotPassword.dart';
 import 'package:cartaspg/screens/login/login.dart';
@@ -65,6 +66,16 @@ GoRouter appRouter() {
                       // Puedes seguir accediendo a 'cursoId' de la ruta padre
                       final String cursoId = state.pathParameters['id']!;
                       return QuizPage(cursoId: cursoId);
+                    },
+                  ),
+                  GoRoute(
+                    path: 'editarTarjeta/:cardId',
+                    name: 'EditarTarjeta',
+                    builder: (BuildContext context, GoRouterState state) {
+                      // Recuperar los parámetros correctamente
+                      final String cardId = state.pathParameters['cardId']!;
+                      final String cursoId = state.pathParameters['id']!; // 'id' proviene de la ruta padre 'detalleCurso/:id'
+                      return UpdateCard(cardId: cardId, cursoId: cursoId);
                     },
                   ),
                 ],

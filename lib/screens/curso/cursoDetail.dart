@@ -141,7 +141,8 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-                          context.go('/homePage/detalleCurso/${widget.cursoId}/tarjeta/$cardId');
+                          // Navegar a la página de edición de la tarjeta
+                          context.go('/homePage/detalleCurso/${widget.cursoId}/editarTarjeta/$cardId');
                         }
                       ),
                       IconButton(
