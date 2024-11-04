@@ -80,6 +80,7 @@ class _QuizPageState extends State<QuizPage> {
         padding: const EdgeInsets.all(16.0),
         children: [
           TextFormField(
+            style: const TextStyle(color: Colors.white),
             controller: _quizTitleController,
             decoration: InputDecoration(
               labelText: 'Título del Quiz', 
@@ -97,7 +98,9 @@ class _QuizPageState extends State<QuizPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Pregunta ${idx + 1}', style: TextStyle(color: const Color.fromARGB(255, 153, 118, 2), fontSize: 40.sp, fontWeight: FontWeight.bold)),
+                SizedBox(height: 25.h),
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: qf.questionController,
                   decoration: InputDecoration(
                     labelText: 'Pregunta',
@@ -109,6 +112,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
                 SizedBox(height: 16.h),
                 TextFormField(
+                  style: const TextStyle(color: Colors.white),
                   controller: qf.correctAnswerController,
                   decoration: InputDecoration(
                     labelText: 'Respuesta correcta',
@@ -122,6 +126,7 @@ class _QuizPageState extends State<QuizPage> {
                 ...List.generate(3, (index) => Column(
                   children: [
                     TextFormField(
+                  style: const TextStyle(color: Colors.white),
                       controller: qf.wrongAnswersControllers[index],
                       decoration: InputDecoration(
                         labelText: 'Respuesta incorrecta ${index + 1}',
