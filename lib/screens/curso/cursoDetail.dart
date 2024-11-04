@@ -154,7 +154,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
             icon: const Icon(Icons.quiz_outlined, color: Colors.white),
             label: const Text('Crear QUIZ', style: TextStyle(color: Colors.white)),
           ),
-          SizedBox(height: 8.0), // Cambié a 8.0 para simplificar
+          SizedBox(height: 8.h), // Cambié a 8.0 para simplificar
           FloatingActionButton.extended(
             heroTag: 'crearTarjeta',
             backgroundColor: const Color.fromARGB(255, 153, 118, 2),

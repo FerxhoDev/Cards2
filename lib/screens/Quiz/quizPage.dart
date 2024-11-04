@@ -81,7 +81,12 @@ class _QuizPageState extends State<QuizPage> {
         children: [
           TextFormField(
             controller: _quizTitleController,
-            decoration: const InputDecoration(labelText: 'Título del Quiz'),
+            decoration: InputDecoration(
+              labelText: 'Título del Quiz', 
+              labelStyle: const TextStyle(color: Colors.white),
+              enabledBorder: eneableBordT(),
+              focusedBorder: focusBordT(Colors.white),
+            ),
             validator: (value) => value!.isEmpty ? 'Por favor ingrese un título' : null,
           ),
           const SizedBox(height: 16),
@@ -91,43 +96,87 @@ class _QuizPageState extends State<QuizPage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Pregunta ${idx + 1}', style: Theme.of(context).textTheme.titleLarge),
+                Text('Pregunta ${idx + 1}', style: TextStyle(color: const Color.fromARGB(255, 153, 118, 2), fontSize: 40.sp, fontWeight: FontWeight.bold)),
                 TextFormField(
                   controller: qf.questionController,
-                  decoration: const InputDecoration(labelText: 'Pregunta'),
+                  decoration: InputDecoration(
+                    labelText: 'Pregunta',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    enabledBorder: eneableBordT(),
+                    focusedBorder: focusBordT(Colors.white),
+                  ),
                   validator: (value) => value!.isEmpty ? 'Por favor ingrese una pregunta' : null,
                 ),
+                SizedBox(height: 16.h),
                 TextFormField(
                   controller: qf.correctAnswerController,
-                  decoration: const InputDecoration(labelText: 'Respuesta correcta'),
+                  decoration: InputDecoration(
+                    labelText: 'Respuesta correcta',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    enabledBorder: eneableBordT(),
+                    focusedBorder: focusBordT(Colors.green),
+                  ),
                   validator: (value) => value!.isEmpty ? 'Por favor ingrese la respuesta correcta' : null,
                 ),
-                ...List.generate(3, (index) => TextFormField(
-                  controller: qf.wrongAnswersControllers[index],
-                  decoration: InputDecoration(labelText: 'Respuesta incorrecta ${index + 1}'),
-                  validator: (value) => value!.isEmpty ? 'Por favor ingrese una respuesta incorrecta' : null,
-                )),
+                SizedBox(height: 40.h),
+                ...List.generate(3, (index) => Column(
+                  children: [
+                    TextFormField(
+                      controller: qf.wrongAnswersControllers[index],
+                      decoration: InputDecoration(
+                        labelText: 'Respuesta incorrecta ${index + 1}',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        enabledBorder: eneableBordT(),
+                        focusedBorder: focusBordT(Colors.red),
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Por favor ingrese una respuesta incorrecta' : null,
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+                ),),
                 const SizedBox(height: 16),
                 if (idx == questionForms.length - 1)
-                  ElevatedButton(
+                  ElevatedButton.icon(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 150, 136)),
+                    ),
                     onPressed: () {
                       setState(() {
                         questionForms.add(QuestionForm());
                       });
                     },
-                    child: const Text('Añadir otra pregunta'),
+                    label: const Text('Añadir otra pregunta', style: TextStyle(color: Colors.white),),
+                    icon: const Icon(Icons.add, color: Colors.white,),
                   ),
                 const SizedBox(height: 16),
               ],
             );
           }).toList(),
-          ElevatedButton(
+          ElevatedButton.icon(
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 153, 118, 2)),
+            ),
             onPressed: createQuiz,
-            child: const Text('Crear Quiz'),
+            label: const Text('Crear Quiz', style: TextStyle(color: Colors.white),),
+            icon: const Icon(Icons.check, color: Colors.white,),
           ),
         ],
       ),
     );
+  }
+
+  OutlineInputBorder focusBordT(Color colorBorder) {
+    return OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: colorBorder),
+            );
+  }
+
+  OutlineInputBorder eneableBordT() {
+    return const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: Colors.white),
+            );
   }
 
   Widget buildQuizList() {
