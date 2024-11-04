@@ -134,6 +134,43 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
                     // Por ejemplo, navegar a una página de edición
                     print('ID de la tarjeta: $cardId');
                   },
+                  trailing: userRole == 'profesor'
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          context.go('/homePage/detalleCurso/${widget.cursoId}/tarjeta/$cardId');
+                        }
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Eliminar Carta'),
+                            content: const Text('¿Estás seguro de que quieres eliminar esta carta de información?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  // Llamar a la función para eliminar la tarjeta de la colección de tarjetas
+                                  cursoRef.collection('cards').doc(cardId).delete();
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Eliminar'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : null,
                 ),
               );
             },

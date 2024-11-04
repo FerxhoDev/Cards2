@@ -62,8 +62,11 @@ class _AddCardModState extends State<AddCardMod> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(255, 29, 143, 131),
-              Color.fromARGB(255, 74, 235, 219)
+              //Color.fromARGB(255, 30, 81, 76),
+              //Color.fromARGB(255, 69, 121, 116),
+              Color(0xFF425C5A),
+              Color(0xFF425C5A),
+
             ],
           ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

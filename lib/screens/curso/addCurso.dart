@@ -95,8 +95,8 @@ Future<void> _createCurso() async {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color.fromARGB(255, 30, 81, 76),
-                Color(0xFF425C5A),
+               Color(0xFF425C5A),
+               Color(0xFF425C5A),
               ],
             ),
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
