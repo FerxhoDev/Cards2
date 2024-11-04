@@ -1,6 +1,8 @@
+import 'package:cartaspg/screens/curso/addCardtoCurso.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CurdsoDetallePage extends StatefulWidget {
   final String cursoId;
@@ -120,7 +122,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
               return Card(
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
-                  title: Text(titulo),
+                  title: Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold),),
                   subtitle: Text(detalle),
                   onTap: () {
                     // Aquí puedes manejar la acción al tocar la tarjeta
@@ -134,14 +136,35 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
         },
       ),
       floatingActionButton: userRole == 'profesor'
-          ? FloatingActionButton.extended(
-              backgroundColor: const Color.fromARGB(255, 153, 118, 2),
-              onPressed: () {
-                null; // Aquí puedes manejar la acción al tocar el botón
-              },
-              icon: const Icon(Icons.add, color: Colors.white,),
-              label: const Text('Crear Tarjeta', style: TextStyle(color: Colors.white),),
-            )
+          ? Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FloatingActionButton.extended(
+                backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+                onPressed: () {
+                  null; // Aquí puedes manejar la acción al tocar el botón
+                },
+                icon: const Icon(Icons.quiz_outlined, color: Colors.white,),
+                label: const Text('Crear QUIZ', style: TextStyle(color: Colors.white),),
+              ),
+              SizedBox(height: 8.h),
+              FloatingActionButton.extended(
+                backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+                onPressed: () {
+                  showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) => AddCardMod(categoryId: widget.cursoId),
+                  isScrollControlled: true)
+              .then((_) {
+            setState(() {}); // Forzar la actualización del estado
+          });
+                },
+                icon: const Icon(Icons.add, color: Colors.white,),
+                label: const Text('Crear Tarjeta', style: TextStyle(color: Colors.white),),
+              ),
+            ],
+          )
           : null,
     );
     
