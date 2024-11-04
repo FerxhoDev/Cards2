@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class CurdsoDetallePage extends StatefulWidget {
   final String cursoId;
@@ -140,38 +141,50 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
         },
       ),
       floatingActionButton: userRole == 'profesor'
-          ? Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              FloatingActionButton.extended(
-                heroTag: 'crearQuiz',
-                backgroundColor: const Color.fromARGB(255, 153, 118, 2),
-                onPressed: () {
-                  null; // Aquí puedes manejar la acción al tocar el botón
-                },
-                icon: const Icon(Icons.quiz_outlined, color: Colors.white,),
-                label: const Text('Crear QUIZ', style: TextStyle(color: Colors.white),),
-              ),
-              SizedBox(height: 8.h),
-              FloatingActionButton.extended(
-                heroTag: 'crearTarjeta',
-                backgroundColor: const Color.fromARGB(255, 153, 118, 2),
-                onPressed: () {
-                  showModalBottomSheet(
-                  context: context,
-                  builder: (ctx) => AddCardMod(categoryId: widget.cursoId),
-                  isScrollControlled: true)
-              .then((_) {
-            setState(() {}); // Forzar la actualización del estado
-          });
-                },
-                icon: const Icon(Icons.add, color: Colors.white,),
-                label: const Text('Crear Tarjeta', style: TextStyle(color: Colors.white),),
-              ),
-            ],
+    ? Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'crearQuiz',
+            backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+            onPressed: () {
+              context.go('/homePage/detalleCurso/${widget.cursoId}/Quiz');
+            },
+            icon: const Icon(Icons.quiz_outlined, color: Colors.white),
+            label: const Text('Crear QUIZ', style: TextStyle(color: Colors.white)),
+          ),
+          SizedBox(height: 8.0), // Cambié a 8.0 para simplificar
+          FloatingActionButton.extended(
+            heroTag: 'crearTarjeta',
+            backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (ctx) => AddCardMod(categoryId: widget.cursoId),
+                isScrollControlled: true,
+              ).then((_) {
+                setState(() {}); // Forzar la actualización del estado
+              });
+            },
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: const Text('Crear Tarjeta', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      )
+    : userRole == 'estudiante'
+        ? FloatingActionButton.extended(
+            heroTag: 'jugarQuiz',
+            backgroundColor: const Color.fromARGB(255, 0, 150, 136),
+            onPressed: () {
+              // Navegar a la página de jugar quiz
+              context.go('/homePage/detalleCurso/${widget.cursoId}/Quiz');
+            },
+            icon: const Icon(Icons.play_arrow, color: Colors.white),
+            label: const Text('Jugar Quiz', style: TextStyle(color: Colors.white)),
           )
-          : null,
+        : null,
+
     );
     
   }

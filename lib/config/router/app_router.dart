@@ -1,4 +1,5 @@
 import 'package:cartaspg/screens/Home/homePage.dart';
+import 'package:cartaspg/screens/Quiz/quizPage.dart';
 import 'package:cartaspg/screens/curso/cursoDetail.dart';
 import 'package:cartaspg/screens/forgotPassword/forgotPassword.dart';
 import 'package:cartaspg/screens/login/login.dart';
@@ -56,6 +57,17 @@ GoRouter appRouter() {
                   final String cursoId = state.pathParameters['id']!;
                   return CurdsoDetallePage(cursoId: cursoId);
                 },
+                routes: [
+                  GoRoute(
+                    path: 'Quiz',
+                    name: 'Quiz',
+                    builder: (BuildContext context, GoRouterState state) {
+                      // Puedes seguir accediendo a 'cursoId' de la ruta padre
+                      final String cursoId = state.pathParameters['id']!;
+                      return QuizPage(cursoId: cursoId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
