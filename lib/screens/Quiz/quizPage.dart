@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -357,7 +359,7 @@ class QuestionForm {
 class QuizTakingPage extends StatefulWidget {
   final Map<String, dynamic> quiz;
 
-  const QuizTakingPage({Key? key, required this.quiz}) : super(key: key);
+  const QuizTakingPage({super.key, required this.quiz});
 
   @override
   _QuizTakingPageState createState() => _QuizTakingPageState();
@@ -366,19 +368,29 @@ class QuizTakingPage extends StatefulWidget {
 class _QuizTakingPageState extends State<QuizTakingPage> {
   int currentQuestionIndex = 0;
   int correctAnswers = 0;
+  Map<String, Color> buttonColors = {};
 
-  void answerQuestion(bool isCorrect) {
+  void answerQuestion(String selectedAnswer, String correctAnswer) {
+    bool isCorrect = selectedAnswer == correctAnswer;
+    setState(() {
+      buttonColors[selectedAnswer] = isCorrect ? Colors.green : Colors.red;
+      buttonColors[correctAnswer] = Colors.green;
+    });
+
     if (isCorrect) {
       correctAnswers++;
     }
 
-    if (currentQuestionIndex < (widget.quiz['questions'] as List).length - 1) {
-      setState(() {
-        currentQuestionIndex++;
-      });
-    } else {
-      showResults();
-    }
+    Timer(const Duration(milliseconds: 500), () {
+      if (currentQuestionIndex < (widget.quiz['questions'] as List).length - 1) {
+        setState(() {
+          currentQuestionIndex++;
+          buttonColors.clear();
+        });
+      } else {
+        showResults();
+      }
+    });
   }
 
   void showResults() {
@@ -433,8 +445,13 @@ class _QuizTakingPageState extends State<QuizTakingPage> {
               .map((answer) => Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: ElevatedButton(
-                  onPressed: () => answerQuestion(answer == currentQuestion['correctAnswer']),
-                  child: Text(answer),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(buttonColors[answer] ?? Colors.white),
+                  ),
+                  onPressed: buttonColors.isEmpty
+                    ? () => answerQuestion(answer, currentQuestion['correctAnswer'])
+                    : null,
+                  child: Text(answer, style: const TextStyle(color: Colors.black)),
                 ),
               ))
             ),
