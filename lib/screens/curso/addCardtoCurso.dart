@@ -128,10 +128,10 @@ class _AddCardModState extends State<AddCardMod> {
                   child: TextField(
                     onChanged: (value) {
                       setState(() {
-                        _counterDetalle = (170 - value.length).toString();
+                        _counterDetalle = (500 - value.length).toString();
                       });
                     },
-                    maxLength: 170,
+                    maxLength: 500,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     controller: _detalleTitleController,
                     decoration: InputDecoration(
@@ -139,7 +139,7 @@ class _AddCardModState extends State<AddCardMod> {
                           color: Colors.teal[800],
                           fontSize: 12,
                           fontWeight: FontWeight.bold),
-                      counterText: "$_counterDetalle/170",
+                      counterText: "$_counterDetalle/500",
                       labelText: 'Detalle',
                       labelStyle: TextStyle(
                           color: Colors.teal[800], fontWeight: FontWeight.bold),

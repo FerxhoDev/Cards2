@@ -255,7 +255,7 @@ class _QuizPageState extends State<QuizPage> {
                 builder: (context) => QuizTakingPage(quiz: quiz),
               ),
             ),
-            trailing: userRole == 'profesor'
+            trailing: userRole == 'Profesor'
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -306,7 +306,7 @@ class _QuizPageState extends State<QuizPage> {
       ),
       body: Column(
         children: [
-          if (userRole == 'profesor' && !isCreatingQuiz)
+          if (userRole == 'Profesor' && !isCreatingQuiz)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton.icon(

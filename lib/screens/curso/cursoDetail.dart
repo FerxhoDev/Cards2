@@ -134,7 +134,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
                     // Por ejemplo, navegar a una página de edición
                     print('ID de la tarjeta: $cardId');
                   },
-                  trailing: userRole == 'profesor'
+                  trailing: userRole == 'Profesor'
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -178,7 +178,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
           );
         },
       ),
-      floatingActionButton: userRole == 'profesor'
+      floatingActionButton: userRole == 'Profesor'
     ? Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -210,7 +210,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
           ),
         ],
       )
-    : userRole == 'estudiante'
+    : userRole == 'Estudiante'
         ? FloatingActionButton.extended(
             heroTag: 'jugarQuiz',
             backgroundColor: const Color.fromARGB(255, 0, 150, 136),

@@ -1,5 +1,6 @@
 import 'package:cartaspg/screens/Home/homePage.dart';
 import 'package:cartaspg/screens/Quiz/quizPage.dart';
+import 'package:cartaspg/screens/Users/UsersPlatf.dart';
 import 'package:cartaspg/screens/cards/UpdateCard.dart';
 import 'package:cartaspg/screens/curso/cursoDetail.dart';
 import 'package:cartaspg/screens/forgotPassword/forgotPassword.dart';
@@ -79,6 +80,11 @@ GoRouter appRouter() {
                     },
                   ),
                 ],
+              ),
+              GoRoute(
+                path: 'users',
+                name: 'Users',
+                builder: (BuildContext context, GoRouterState state) => const UserManagementScreen(),
               ),
             ],
           ),

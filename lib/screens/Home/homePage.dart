@@ -256,19 +256,50 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
       ),
-      floatingActionButton: userRole == 'profesor'
-          ? FloatingActionButton.extended(
-              backgroundColor: const Color.fromARGB(255, 153, 118, 2),
-              onPressed: () {
-                showModalBottomSheet(
-                          context: context,
-                          builder: (ctx) => const AddCurso(),
-                          isScrollControlled: true,
-                        );
-              },
-              icon: const Icon(Icons.add, color: Colors.white,),
-              label: const Text('Crear Curso', style: TextStyle(color: Colors.white),),
-            )
+      floatingActionButton: userRole == 'Administrador'
+          ? Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FloatingActionButton.extended(
+                  heroTag: 'Usuarios',
+                  backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+                  onPressed: () {
+                    context.go('/homePage/users');
+                  },
+                  icon: const Icon(Icons.group_add_outlined, color: Colors.white,),
+                  label: const Text('Usuario', style: TextStyle(color: Colors.white),),
+                ),
+                SizedBox(height: 8.h),
+                FloatingActionButton.extended(
+                  heroTag: 'Cursos',
+                  backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (ctx) => const AddCurso(),
+                      isScrollControlled: true,
+                    );
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white,),
+                  label: const Text('Crear Curso', style: TextStyle(color: Colors.white),),
+                ),
+            ],
+          )
+          : userRole == 'Profesor'
+              ? FloatingActionButton.extended(
+                  heroTag: 'CrearCurso',
+                  backgroundColor: const Color.fromARGB(255, 153, 118, 2),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (ctx) => const AddCurso(),
+                      isScrollControlled: true,
+                    );
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white,),
+                  label: const Text('Crear Curso', style: TextStyle(color: Colors.white),),
+                )
           : null,
     );
   }
