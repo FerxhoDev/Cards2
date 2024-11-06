@@ -134,7 +134,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
                     // Por ejemplo, navegar a una página de edición
                     print('ID de la tarjeta: $cardId');
                   },
-                  trailing: userRole == 'Profesor'
+                  trailing: userRole == 'Profesor' || userRole == 'Administrador' 
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -178,7 +178,7 @@ class _CurdsoDetallePageState extends State<CurdsoDetallePage> {
           );
         },
       ),
-      floatingActionButton: userRole == 'Profesor'
+      floatingActionButton: userRole == 'Profesor' || userRole == 'Administrador'
     ? Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,

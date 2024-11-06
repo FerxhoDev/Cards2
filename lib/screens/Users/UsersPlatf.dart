@@ -254,6 +254,26 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   }
 
   void _deleteUser(String documentId) {
-    FirebaseFirestore.instance.collection('usersperm').doc(documentId).delete();
+    // confirmación de eliminación
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmación'),
+        content: const Text('¿Estás seguro de que deseas eliminar este usuario?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              FirebaseFirestore.instance.collection('usersperm').doc(documentId).delete();
+              Navigator.pop(context);
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
   }
 }

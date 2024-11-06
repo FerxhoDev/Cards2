@@ -19,55 +19,60 @@ class _LoginState extends State<Login> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> _handleSignIn(BuildContext context) async {
-    try {
-      // Cerrar sesión previa para permitir seleccionar otra cuenta
-      await _googleSignIn.signOut();
-      
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return;
+  try {
+    // Cerrar sesión previa para permitir seleccionar otra cuenta
+    await _googleSignIn.signOut();
+    
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) return;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
-      final User? user = userCredential.user;
+    final UserCredential userCredential = await _auth.signInWithCredential(credential);
+    final User? user = userCredential.user;
 
-      if (user != null) {
-        // Verificar si el correo está en la colección usersperm
-        final QuerySnapshot result = await FirebaseFirestore.instance
-            .collection('usersperm')
-            .where('email', isEqualTo: user.email)
-            .limit(1)
-            .get();
+    if (user != null) {
+      // Verificar si el correo está en la colección usersperm
+      final QuerySnapshot result = await FirebaseFirestore.instance
+          .collection('usersperm')
+          .where('email', isEqualTo: user.email)
+          .limit(1)
+          .get();
 
-        if (result.docs.isNotEmpty) {
-          // El correo está permitido, navegar a la página de inicio
-          context.goNamed('HomePage');
-        } else {
-          // El correo no está permitido
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Este correo no está autorizado para iniciar sesión.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          // Cerrar sesión del usuario no autorizado
-          await _auth.signOut();
-        }
+      if (result.docs.isNotEmpty) {
+        // Verifica si el widget sigue montado antes de navegar
+        if (!mounted) return;
+        // El correo está permitido, navegar a la página de inicio
+        context.goNamed('HomePage');
+      } else {
+        // El correo no está permitido
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Este correo no está autorizado para iniciar sesión.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // Cerrar sesión del usuario no autorizado
+        await _auth.signOut();
       }
-    } catch (e) {
-      print('Error durante el inicio de sesión: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ocurrió un error durante el inicio de sesión.'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
+  } catch (e) {
+    print('Error durante el inicio de sesión: $e');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Ocurrió un error durante el inicio de sesión.'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

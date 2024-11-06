@@ -306,7 +306,7 @@ class _QuizPageState extends State<QuizPage> {
       ),
       body: Column(
         children: [
-          if (userRole == 'Profesor' && !isCreatingQuiz)
+          if (userRole == 'Profesor' || userRole == 'Administrador' && !isCreatingQuiz)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton.icon(
