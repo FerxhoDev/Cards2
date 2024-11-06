@@ -1,3 +1,4 @@
+import 'package:cartaspg/provider/appProvider.dart';
 import 'package:cartaspg/screens/Home/homePage.dart';
 import 'package:cartaspg/screens/Quiz/quizPage.dart';
 import 'package:cartaspg/screens/Users/UsersPlatf.dart';
@@ -9,7 +10,7 @@ import 'package:cartaspg/screens/signIn/signIn.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 
 GoRouter appRouter() {
   return GoRouter(
@@ -19,8 +20,8 @@ GoRouter appRouter() {
         path: '/',
         name: 'root',
         builder: (context, state) {
-          final user = Provider.of<User?>(context);
-          if (user == null) {
+          final AuthProviders authProvider  = Provider.of<AuthProviders>(context);
+          if (authProvider.user == null) {
             return const Login();
           } else {
             return const Homepage();
