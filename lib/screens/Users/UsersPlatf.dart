@@ -17,6 +17,130 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   String _selectedRole = 'Estudiante';
   String _searchQuery = '';
 
+  final _editFormKey = GlobalKey<FormState>();
+
+
+
+  void _editUser(DocumentSnapshot document) {
+  Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+  _nameController.text = data['name'];
+  _emailController.text = data['email'];
+  _selectedRole = data['rol'];
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color(0xFF425C5A),
+      title: const Text('Editar Usuario', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Form(
+          key: _editFormKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre',
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese un nombre';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese un email';
+                  }
+                  return null;
+                },
+              ),
+              Theme(
+                data: Theme.of(context).copyWith(
+                canvasColor: const Color.fromARGB(255, 73, 77, 76), // Cambia el color de fondo aquí
+              ),
+                child: DropdownButtonFormField<String>(
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                  value: _selectedRole,
+                  items: ['Estudiante', 'Profesor', 'Administrador']
+                      .map((role) => DropdownMenuItem(
+                            value: role,
+                            child: Text(role),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedRole = value!;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Rol',
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar', style: TextStyle(color: Colors.white),),
+        ),
+        TextButton(
+          onPressed: () => _updateUser(document.id),
+          child: const Text('Actualizar', style: TextStyle(color: Colors.white),),
+        ),
+      ],
+    ),
+  );
+}
+
+void _updateUser(String documentId) async {
+  if (_editFormKey.currentState!.validate()) {
+    String email = _emailController.text;
+
+    // Check if the new email already exists (excluding the current user)
+    QuerySnapshot query = await FirebaseFirestore.instance
+        .collection('usersperm')
+        .where('email', isEqualTo: email)
+        .get();
+
+    bool emailExists = query.docs.any((doc) => doc.id != documentId);
+
+    if (!emailExists) {
+      await FirebaseFirestore.instance.collection('usersperm').doc(documentId).update({
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'rol': _selectedRole,
+      });
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Usuario actualizado exitosamente')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('El correo ya está registrado por otro usuario')),
+      );
+    }
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,11 +371,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     }
   }
 }
-
-
-  void _editUser(DocumentSnapshot document) {
-    // Implement edit functionality
-  }
 
   void _deleteUser(String documentId) {
     // confirmación de eliminación
