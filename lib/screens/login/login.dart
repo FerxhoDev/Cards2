@@ -81,7 +81,7 @@ class _LoginState extends State<Login> {
       body: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.52,
+            height: MediaQuery.of(context).size.height * 0.65,
             decoration: const BoxDecoration(
               color: Color(0xFF425C5A),
               borderRadius: BorderRadius.only(
@@ -109,6 +109,8 @@ class _LoginState extends State<Login> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  SizedBox(height: 20.h),
+                  Image.asset('images/LogoApp.png', height: 400.h),
                 ],
               ),
             ),
@@ -121,34 +123,15 @@ class _LoginState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: 20.h),
-                    Text('Quien eres?',
-                        style: TextStyle(
-                            fontSize: 35.sp, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 15.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      child: DropdownButton<String>(
-                        hint: const Text('Selecciona tu rol'),
-                        value: _selectedRole,
-                        icon: const Icon(Icons.arrow_drop_down),
-                        items: <String>[
-                          'Estudiante',
-                          'Profesor',
-                          'Administrador'
-                        ].map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedRole = newValue;
-                          });
-                        },
+                    Text(
+                      'Inicia sesión con tu cuenta de Google',
+                      style: TextStyle(
+                        fontSize: 30.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 100.h),
+                    SizedBox(height: 80.h),
                     SignInButton(
                       Buttons.google,
                       text: 'Iniciar con Google',
