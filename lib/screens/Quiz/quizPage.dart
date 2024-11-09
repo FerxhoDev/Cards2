@@ -368,10 +368,25 @@ class QuizTakingPage extends StatefulWidget {
 class _QuizTakingPageState extends State<QuizTakingPage> {
   int currentQuestionIndex = 0;
   int correctAnswers = 0;
+  late List<String> shuffledAnswers;
   Map<String, Color> buttonColors = {};
 
-  void answerQuestion(String selectedAnswer, String correctAnswer) {
-    bool isCorrect = selectedAnswer == correctAnswer;
+  @override
+  void initState() {
+    super.initState();
+    shuffleAnswers();
+  }
+
+  void shuffleAnswers() {
+    final currentQuestion = (widget.quiz['questions'] as List)[currentQuestionIndex] as Map<String, dynamic>;
+    shuffledAnswers = [currentQuestion['correctAnswer'], ...currentQuestion['wrongAnswers']]..shuffle();
+  }
+
+  void answerQuestion(String selectedAnswer) {
+    final currentQuestion = (widget.quiz['questions'] as List)[currentQuestionIndex] as Map<String, dynamic>;
+    final correctAnswer = currentQuestion['correctAnswer'];
+    final isCorrect = selectedAnswer == correctAnswer;
+
     setState(() {
       buttonColors[selectedAnswer] = isCorrect ? Colors.green : Colors.red;
       buttonColors[correctAnswer] = Colors.green;
@@ -381,11 +396,12 @@ class _QuizTakingPageState extends State<QuizTakingPage> {
       correctAnswers++;
     }
 
-    Timer(const Duration(milliseconds: 500), () {
+    Timer(const Duration(milliseconds: 1000), () {
       if (currentQuestionIndex < (widget.quiz['questions'] as List).length - 1) {
         setState(() {
           currentQuestionIndex++;
           buttonColors.clear();
+          shuffleAnswers();
         });
       } else {
         showResults();
@@ -433,28 +449,24 @@ class _QuizTakingPageState extends State<QuizTakingPage> {
           children: [
             Text(
               'Pregunta ${currentQuestionIndex + 1} de ${questions.length}',
-              style: const TextStyle(color: Color.fromARGB(255, 153, 118, 2),fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Color.fromARGB(255, 153, 118, 2), fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16.h),
+            const SizedBox(height: 16),
             Text(
               currentQuestion['question'],
-              style: TextStyle(color: Colors.white, fontSize: 30.sp, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            ...(([currentQuestion['correctAnswer'], ...currentQuestion['wrongAnswers']]..shuffle())
-              .map((answer) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(buttonColors[answer] ?? Colors.white),
-                  ),
-                  onPressed: buttonColors.isEmpty
-                    ? () => answerQuestion(answer, currentQuestion['correctAnswer'])
-                    : null,
-                  child: Text(answer, style: const TextStyle(color: Colors.black)),
+            ...shuffledAnswers.map((answer) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(buttonColors[answer] ?? Colors.white),
                 ),
-              ))
-            ),
+                onPressed: buttonColors.isEmpty ? () => answerQuestion(answer) : null,
+                child: Text(answer, style: const TextStyle(color: Colors.black)),
+              ),
+            )),
           ],
         ),
       ),
