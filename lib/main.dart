@@ -14,7 +14,7 @@ Future <void> main() async {
   runApp(
     MultiProvider(
       providers: [
-       ChangeNotifierProvider(create: (_) => AuthProviders()),
+       ChangeNotifierProvider(create: (_) => AuthProviders()), 
       ],
       child: const MyApp()
     )
